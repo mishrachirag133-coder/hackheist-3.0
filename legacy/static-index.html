@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hack Heist 3.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #08090a;
+      font-family: 'JetBrains Mono', monospace;
+      overflow-x: hidden;
+    }
+    .font-heist {
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    /* CRT Scanline effect */
+    .scanlines {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+      background-size: 100% 4px, 6px 100%;
+    }
+    /* Vault Wheel Rotation */
+    .vault-turning {
+      transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+    }
+    .vault-open-left {
+      transform: translateX(-100%) rotateY(-30deg);
+      transition: transform 1.4s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    .vault-open-right {
+      transform: translateX(100%) rotateY(30deg);
+      transition: transform 1.4s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    /* Terminal code colors */
+    .t-red { color: #e50914; }
+    .t-green { color: #4ec94e; }
+    .t-orange { color: #e89b3e; }
+    .t-white { color: #e0e0e0; }
+    .t-gray { color: #6b7280; }
+    .t-blue { color: #5b9bd5; }
+    .t-yellow { color: #fbbf24; }
+
+    #typewriter p {
+      white-space: pre;
+      line-height: 1.7;
+    }
+
+    /* Blinking cursor */
+    .cursor-blink::after {
+      content: '█';
+      color: #e50914;
+      animation: blink 0.7s step-end infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body class="text-neutral-200 select-none">
+
+  <!-- TERMINAL LOADER OVERLAY -->
+  <div id="loader" class="fixed inset-0 z-50 bg-[#0a0a0a] scanlines flex flex-col justify-between p-8 md:p-16">
+    <div class="flex justify-between text-xs font-bold tracking-widest">
+      <span class="t-red">MIET MAINFRAME // BREACH STATUS: <span id="breach-pct">0</span>% ACCESSED</span>
+      <span class="t-gray">NODE: 192.168.0.1</span>
+    </div>
+    
+    <div class="max-w-3xl">
+      <div id="typewriter" class="text-sm md:text-base space-y-1"></div>
+      <div class="mt-6 h-1.5 w-full bg-neutral-900 overflow-hidden border border-neutral-800">
+        <div id="progress-bar" class="h-full bg-red-600 w-0 transition-all duration-300 ease-out"></div>
+      </div>
+    </div>
+
+    <div class="text-xs text-neutral-600 flex justify-between">
+      <span>THE PROFESSOR: INITIATING RECRUITMENT</span>
+      <span id="load-percent">0%</span>
+    </div>
+  </div>
+
+  <!-- MAIN VAULT HERO SECTION -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden perspective-1000">
+    
+    <!-- Revealed Content (Inside the Vault) -->
+    <div id="inner-vault" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-b from-[#111215] to-[#08090a] opacity-0 transition-opacity duration-1000">
+      <span class="text-red-500 text-sm tracking-[0.3em] font-bold uppercase mb-2">Operation Active // Target Confirmed</span>
+      <h1 class="font-heist text-7xl md:text-9xl tracking-wider text-white drop-shadow-[0_10px_35px_rgba(229,9,20,0.5)]">
+        HACK HEIST <span class="text-red-600">3.0</span>
+      </h1>
+      <p class="max-w-xl text-neutral-400 text-xs md:text-sm mt-4 tracking-wide leading-relaxed">
+        36 Hours of Code, Decryption, and High-Stakes Innovation. Assemble your crew and breach the mainframe.
+      </p>
+      
+      <div class="flex flex-wrap gap-4 mt-8">
+        <button class="px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold tracking-widest uppercase text-xs border border-red-500 shadow-[0_0_20px_rgba(229,9,20,0.4)] transition">
+          Apply With Devfolio
+        </button>
+        <button class="px-8 py-3.5 bg-transparent hover:bg-neutral-900 text-neutral-300 font-bold tracking-widest uppercase text-xs border border-neutral-700 transition">
+          View Blueprint
+        </button>
+      </div>
+    </div>
+
+    <!-- Left Vault Door Half -->
+    <div id="door-left" class="absolute top-0 left-0 w-1/2 h-full bg-[#121316] border-r border-neutral-800 flex items-center justify-end z-20 shadow-2xl">
+      <div class="w-24 h-24 rounded-full border-4 border-dashed border-neutral-700 mr-[-48px]"></div>
+    </div>
+
+    <!-- Right Vault Door Half -->
+    <div id="door-right" class="absolute top-0 right-0 w-1/2 h-full bg-[#121316] border-l border-neutral-800 flex items-center justify-start z-20 shadow-2xl">
+      <!-- Vault Dial Hub -->
+      <div id="vault-dial" class="w-48 h-48 rounded-full bg-[#1a1b20] border-8 border-neutral-800 ml-[-96px] relative flex items-center justify-center shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-pointer vault-turning">
+        <!-- Turning Spokes -->
+        <div class="absolute inset-2 rounded-full border-2 border-red-600/40 border-dashed"></div>
+        <div class="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-black font-heist text-xl font-bold shadow-[0_0_20px_rgba(229,9,20,0.6)]">
+          UNLOCK
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <script>
+    // 1. Terminal Loader Script — Code-style hacking lines
+    const terminalLines = [
+      '<span class="t-red">#EE50914 -- error warning</span>',
+      '<span class="t-orange">import</span> <span class="t-white">network_security</span>',
+      '',
+      '<span class="t-red">#E50914 error warning</span>',
+      '',
+      '<span class="t-orange">def</span> <span class="t-blue">bypass_firewall</span><span class="t-white">():</span>',
+      '    <span class="t-orange">try</span><span class="t-white">:</span>',
+      '        <span class="t-white">vault_lock = decrypt_system_key(</span><span class="t-green">"0x7F2B"</span><span class="t-white">)</span>',
+      '        <span class="t-orange">if</span> <span class="t-white">vault_lock.status ==</span> <span class="t-green">\'LOCKED\'</span><span class="t-white">:</span>',
+      '            <span class="t-white">inject_exploit_sequence()</span>',
+      '            <span class="t-white">print(</span><span class="t-green">"[SUCCESS] SYSTEM OVERRIDE INITIATED"</span><span class="t-white">)</span>',
+      '    <span class="t-orange">except</span> <span class="t-red">AccessDenied</span><span class="t-white">:</span>',
+      '        <span class="t-white">print(</span><span class="t-green">"[ALERT] ALERT LEVEL RAISED"</span><span class="t-white">)</span>',
+      '        <span class="t-white">retry_sequence(nodes=</span><span class="t-yellow">128</span><span class="t-white">)</span>',
+    ];
+    
+    let lineIdx = 0;
+    const typewriter = document.getElementById("typewriter");
+    const progressBar = document.getElementById("progress-bar");
+    const loadPercent = document.getElementById("load-percent");
+    const breachPct = document.getElementById("breach-pct");
+    const loader = document.getElementById("loader");
+
+    function renderTerminal() {
+      if (lineIdx < terminalLines.length) {
+        // Remove cursor from previous line
+        const prev = typewriter.querySelector(".cursor-blink");
+        if (prev) prev.classList.remove("cursor-blink");
+
+        const p = document.createElement("p");
+        p.innerHTML = terminalLines[lineIdx];
+        if (terminalLines[lineIdx] !== '') {
+          p.classList.add("cursor-blink");
+        }
+        typewriter.appendChild(p);
+        lineIdx++;
+        const pct = Math.round((lineIdx / terminalLines.length) * 100);
+        progressBar.style.width = pct + "%";
+        loadPercent.textContent = pct + "%";
+        breachPct.textContent = Math.round(pct * 0.84);
+        setTimeout(renderTerminal, 380);
+      } else {
+        // Remove final cursor
+        const last = typewriter.querySelector(".cursor-blink");
+        if (last) last.classList.remove("cursor-blink");
+
+        setTimeout(() => {
+          loader.classList.add("opacity-0", "pointer-events-none");
+          loader.style.transition = "opacity 0.6s ease-out";
+        }, 600);
+      }
+    }
+    renderTerminal();
+
+    // 2. Vault Door Open Trigger
+    const vaultDial = document.getElementById("vault-dial");
+    const doorLeft = document.getElementById("door-left");
+    const doorRight = document.getElementById("door-right");
+    const innerVault = document.getElementById("inner-vault");
+
+    let unlocked = false;
+    vaultDial.addEventListener("click", () => {
+      if (unlocked) return;
+      unlocked = true;
+
+      // Rotate dial 360 deg
+      vaultDial.style.transform = "rotate(360deg)";
+
+      setTimeout(() => {
+        // Slide open the doors
+        doorLeft.classList.add("vault-open-left");
+        doorRight.classList.add("vault-open-right");
+        
+        // Reveal content
+        innerVault.classList.remove("opacity-0");
+        innerVault.classList.add("opacity-100");
+      }, 700);
+    });
+  </script>
+</body>
+</html>
