@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Award, CheckCircle2, Lock, Unlock } from 'lucide-react';
 
-export default function Vault({ playSynthSound, onUnlocked }) {
+export default function Vault({ onUnlocked }) {
   const [isHolding, setIsHolding] = useState(false);
   const [holdingProgress, setHoldingProgress] = useState(0);
   const [vaultUnlocked, setVaultUnlocked] = useState(false);
@@ -10,18 +10,15 @@ export default function Vault({ playSynthSound, onUnlocked }) {
   const startHolding = () => {
     if (vaultUnlocked) return;
     setIsHolding(true);
-    playSynthSound('tick');
     holdIntervalRef.current = setInterval(() => {
       setHoldingProgress((prev) => {
         if (prev >= 100) {
           clearInterval(holdIntervalRef.current);
           setIsHolding(false);
           setVaultUnlocked(true);
-          playSynthSound('unlock');
           onUnlocked?.();
           return 100;
         }
-        playSynthSound('tick');
         return prev + 4;
       });
     }, 60);
@@ -121,7 +118,6 @@ export default function Vault({ playSynthSound, onUnlocked }) {
               onClick={() => {
                 setVaultUnlocked(false);
                 setHoldingProgress(0);
-                playSynthSound('alarm');
               }}
               className="ml-3 underline text-neutral-400 hover:text-white"
             >

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Key, X } from 'lucide-react';
 
-export default function BadgeModal({ open, onClose, playSynthSound }) {
+export default function BadgeModal({ open, onClose }) {
   const [recruitName, setRecruitName] = useState('');
   const [recruitRole, setRecruitRole] = useState('CYBER_INFILTRATOR');
   const [generatedBadge, setGeneratedBadge] = useState(null);
@@ -19,7 +19,6 @@ export default function BadgeModal({ open, onClose, playSynthSound }) {
       date: 'MARCH 28-29, 2026',
       authKey: '0x' + Math.random().toString(16).substr(2, 8).toUpperCase()
     });
-    playSynthSound('unlock');
   };
 
   return (

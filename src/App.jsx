@@ -13,19 +13,15 @@ import Intel from './components/Intel';
 import Escape from './components/Escape';
 import Footer from './components/Footer';
 import BadgeModal from './components/BadgeModal';
-import { useHeistAudio } from './hooks/useHeistAudio';
 
 export default function App() {
   const [introPhase, setIntroPhase] = useState('terminal');
-  const [soundEnabled, setSoundEnabled] = useState(false);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [bellaCiaoMode, setBellaCiaoMode] = useState(false);
   const [confetti, setConfetti] = useState([]);
-  const { initAudio, playSynthSound } = useHeistAudio(soundEnabled);
   const konamiSequence = useRef([]);
 
   const triggerMoneyRain = useCallback(() => {
-    playSynthSound('unlock');
     const items = ['💵', '💶', '💰', '💸', '🪙', '💎'];
     const next = Array.from({ length: 40 }).map((_, i) => ({
       id: Date.now() + i,
@@ -36,12 +32,10 @@ export default function App() {
     }));
     setConfetti(next);
     setTimeout(() => setConfetti([]), 3500);
-  }, [playSynthSound]);
+  }, []);
 
   const rainRef = useRef(triggerMoneyRain);
-  const soundRef = useRef(playSynthSound);
   rainRef.current = triggerMoneyRain;
-  soundRef.current = playSynthSound;
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -54,7 +48,6 @@ export default function App() {
       if (konamiSequence.current.length > expected.length) konamiSequence.current.shift();
       if (konamiSequence.current.join(',') === expected.map((k) => k.toLowerCase()).join(',')) {
         setBellaCiaoMode(true);
-        soundRef.current('bellaciao');
         rainRef.current();
       }
     };
@@ -75,14 +68,12 @@ export default function App() {
         <TerminalIntro
           onBypass={goVideo}
           onComplete={goVideo}
-          playSynthSound={playSynthSound}
         />
       )}
 
       {introPhase === 'video' && (
         <VideoIntro
           onEnter={enterApp}
-          playSynthSound={playSynthSound}
         />
       )}
 
@@ -102,15 +93,6 @@ export default function App() {
       <Navbar
         onReplay={goVideo}
         onLogoClick={triggerMoneyRain}
-        soundEnabled={soundEnabled}
-        onToggleSound={() => {
-          const next = !soundEnabled;
-          setSoundEnabled(next);
-          if (next) {
-            initAudio();
-            setTimeout(() => playSynthSound('unlock', true), 0);
-          }
-        }}
       />
 
       <button
@@ -123,22 +105,20 @@ export default function App() {
 
       <Recruitment onForgeBadge={openBadge} />
       <Planning />
-      <Blueprint playSynthSound={playSynthSound} />
-      <Vault playSynthSound={playSynthSound} onUnlocked={triggerMoneyRain} />
-      <Syndicate playSynthSound={playSynthSound} />
-      <Intel playSynthSound={playSynthSound} />
+      <Blueprint />
+      <Vault onUnlocked={triggerMoneyRain} />
+      <Syndicate />
+      <Intel />
       <Escape onForgeBadge={openBadge} />
       <Footer
         onBellaCiao={() => {
           setBellaCiaoMode(true);
-          playSynthSound('bellaciao');
           triggerMoneyRain();
         }}
       />
       <BadgeModal
         open={showBadgeModal}
         onClose={() => setShowBadgeModal(false)}
-        playSynthSound={playSynthSound}
       />
     </div>
   );

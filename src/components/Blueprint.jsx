@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { tracks } from '../data/tracks';
 
-export default function Blueprint({ playSynthSound }) {
+export default function Blueprint() {
   const [selectedTrack, setSelectedTrack] = useState(0);
 
   return (
@@ -31,7 +31,6 @@ export default function Blueprint({ playSynthSound }) {
             key={t.id}
             onClick={() => {
               setSelectedTrack(idx);
-              playSynthSound('type');
             }}
             data-interactive="true"
             className={`p-6 rounded-lg border transition-all cursor-pointer relative flex flex-col justify-between ${

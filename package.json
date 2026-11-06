@@ -1,8 +1,20 @@
 {
-  "name": "hack-heist",
-  "private": true,
+  "name": "hackheist",
   "version": "1.0.0",
+  "private": true,
+  "description": "��#\u0000 \u0000h\u0000a\u0000c\u0000k\u0000h\u0000e\u0000i\u0000s\u0000t\u0000-\u00003\u0000.\u00000\u0000\r\u0000 \u0000",
+  "homepage": "https://github.com/mishrachirag133-coder/hackheist-3.0#readme",
+  "bugs": {
+    "url": "https://github.com/mishrachirag133-coder/hackheist-3.0/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mishrachirag133-coder/hackheist-3.0.git"
+  },
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "postcss.config.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

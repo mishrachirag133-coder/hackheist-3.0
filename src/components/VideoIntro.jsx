@@ -3,7 +3,7 @@ import { Volume2, VolumeX } from 'lucide-react';
 
 const VIDEO_SRC = '/final_video.mp4';
 
-export default function VideoIntro({ onEnter, playSynthSound }) {
+export default function VideoIntro({ onEnter }) {
   const videoRef = useRef(null);
   const [videoMuted, setVideoMuted] = useState(true);
 
@@ -25,7 +25,6 @@ export default function VideoIntro({ onEnter, playSynthSound }) {
       playsInline
       muted={videoMuted}
       onEnded={() => {
-        playSynthSound('unlock');
         onEnter();
       }}
       className="w-full h-full object-cover"
@@ -42,7 +41,6 @@ export default function VideoIntro({ onEnter, playSynthSound }) {
       </button>
       <button
         onClick={() => {
-          playSynthSound('unlock');
           onEnter();
         }}
         className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white border border-red-500 text-xs font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(229,9,20,0.6)] transition"

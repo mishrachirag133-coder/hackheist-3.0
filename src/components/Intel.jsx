@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { faqItems } from '../data/faqs';
 
-export default function Intel({ playSynthSound }) {
+export default function Intel() {
   const [declassifiedFaqs, setDeclassifiedFaqs] = useState({});
 
   return (
@@ -30,7 +30,6 @@ export default function Intel({ playSynthSound }) {
             key={idx}
             onClick={() => {
               setDeclassifiedFaqs(prev => ({ ...prev, [idx]: !prev[idx] }));
-              playSynthSound('type');
             }}
             data-interactive="true"
             className={`p-5 rounded-lg border transition-all cursor-pointer ${

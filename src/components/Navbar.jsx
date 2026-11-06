@@ -1,6 +1,6 @@
-import { ExternalLink, Play, Volume2, VolumeX } from 'lucide-react';
+import { ExternalLink, Play } from 'lucide-react';
 
-export default function Navbar({ onReplay, onLogoClick, soundEnabled, onToggleSound }) {
+export default function Navbar({ onReplay, onLogoClick }) {
   return (
 <header className="sticky top-0 z-40 bg-[#08090a]/95 backdrop-blur-md border-b border-neutral-800/80 px-4 md:px-10 py-3.5 flex items-center justify-between">
   <div className="flex items-center space-x-3 cursor-pointer" onClick={() => onLogoClick()}>
@@ -41,19 +41,6 @@ export default function Navbar({ onReplay, onLogoClick, soundEnabled, onToggleSo
       <Play className="w-3.5 h-3.5 text-red-500 fill-red-500" />
       <span className="hidden sm:inline">Replay Intro</span>
     </button>
-
-    {/* Sound Synthesizer Toggle */}
-    {/* <button
-      onClick={onToggleSound}
-      className={`p-2 border rounded text-xs transition ${
-        soundEnabled 
-          ? 'bg-red-600/20 border-red-500 text-red-400 shadow-[0_0_10px_rgba(229,9,20,0.3)]' 
-          : 'bg-neutral-900 border-neutral-700 text-neutral-400 hover:text-white'
-      }`}
-      title={soundEnabled ? "Mute Heist SFX" : "Enable Heist Sound FX"}
-    >
-      {soundEnabled ? <Volume2 className="w-4 h-4 text-red-500" /> : <VolumeX className="w-4 h-4" />}
-    </button> */}
 
     {/* Primary CTA */}
     <a

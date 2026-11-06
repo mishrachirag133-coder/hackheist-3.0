@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Shield } from 'lucide-react';
 import { teamDossiers } from '../data/team';
 
-export default function Syndicate({ playSynthSound }) {
+export default function Syndicate() {
   const [teamFilter, setTeamFilter] = useState('all');
   const [flippedCards, setFlippedCards] = useState({});
   const filteredDossiers = useMemo(() => {
@@ -32,7 +32,6 @@ export default function Syndicate({ playSynthSound }) {
             key={cat}
             onClick={() => {
               setTeamFilter(cat);
-              playSynthSound('type');
             }}
             className={`px-3 py-1.5 rounded uppercase font-bold tracking-wider transition ${
               teamFilter === cat
@@ -59,7 +58,6 @@ export default function Syndicate({ playSynthSound }) {
             key={member.codename}
             onClick={() => {
               setFlippedCards(prev => ({ ...prev, [member.codename]: !prev[member.codename] }));
-              playSynthSound('type');
             }}
             data-interactive="true"
             className="perspective-1000 h-80 cursor-pointer"

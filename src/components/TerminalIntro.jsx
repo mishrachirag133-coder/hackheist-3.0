@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Terminal } from 'lucide-react';
 import { terminalLines } from '../data/terminalLines';
 
-export default function TerminalIntro({ onBypass, onComplete, playSynthSound }) {
+export default function TerminalIntro({ onBypass, onComplete }) {
   const [terminalIndex, setTerminalIndex] = useState(0);
   const [terminalProgress, setTerminalProgress] = useState(0);
 
@@ -12,16 +12,14 @@ export default function TerminalIntro({ onBypass, onComplete, playSynthSound }) 
         setTerminalIndex((prev) => prev + 1);
         const pct = Math.round(((terminalIndex + 1) / terminalLines.length) * 100);
         setTerminalProgress(pct);
-        playSynthSound('type');
       }, 240);
       return () => clearTimeout(timer);
     }
     const transitionTimer = setTimeout(() => {
       onComplete();
-      playSynthSound('alarm');
     }, 450);
     return () => clearTimeout(transitionTimer);
-  }, [terminalIndex, onComplete, playSynthSound]);
+  }, [terminalIndex, onComplete]);
 
   return (
   <div className="fixed inset-0 z-50 bg-[#070809] flex flex-col justify-between p-6 md:p-14 scanlines">
