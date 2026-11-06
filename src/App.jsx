@@ -22,16 +22,19 @@ export default function App() {
   const konamiSequence = useRef([]);
 
   const triggerMoneyRain = useCallback(() => {
-    const items = ['💵', '💶', '💰', '💸', '🪙', '💎'];
-    const next = Array.from({ length: 40 }).map((_, i) => ({
-      id: Date.now() + i,
-      icon: items[Math.floor(Math.random() * items.length)],
-      left: Math.random() * 100,
-      animDuration: 1.5 + Math.random() * 2,
-      size: 20 + Math.random() * 24
-    }));
+    const notes = [
+      { denomination: '₹500', bg: 'from-stone-100 to-stone-200', accent: 'bg-stone-400', text: 'text-stone-700', border: 'border-stone-300' },
+      { denomination: '₹2000', bg: 'from-pink-100 to-pink-200', accent: 'bg-pink-400', text: 'text-pink-800', border: 'border-pink-300' },
+      { denomination: '₹100', bg: 'from-violet-50 to-violet-100', accent: 'bg-violet-400', text: 'text-violet-800', border: 'border-violet-200' },
+    ];
+    const next = Array.from({ length: 162 }).map((_, i) => {
+      const note = notes[Math.floor(Math.random() * notes.length)];
+      const w = 36 + Math.random() * 18;
+      const h = w * 0.48;
+      return { id: Date.now() + i, type: 'note', ...note, w, h, left: Math.random() * 100, animDuration: 1.8 + Math.random() * 2.2 };
+    });
     setConfetti(next);
-    setTimeout(() => setConfetti([]), 3500);
+    setTimeout(() => setConfetti([]), 4500);
   }, []);
 
   const rainRef = useRef(triggerMoneyRain);

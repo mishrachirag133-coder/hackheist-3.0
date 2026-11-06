@@ -1,5 +1,37 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Award, CheckCircle2, Lock, Unlock } from 'lucide-react';
+
+function AnimatedAmount({ value, unlocked, duration = 1200 }) {
+  const [display, setDisplay] = useState(0);
+  const rafRef = useRef(null);
+  const startRef = useRef(null);
+
+  useEffect(() => {
+    if (!unlocked) {
+      setDisplay(0);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      return;
+    }
+    startRef.current = performance.now();
+    const animate = (now) => {
+      const elapsed = now - startRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * value));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [unlocked, value, duration]);
+
+  const formatted = display.toLocaleString('en-IN');
+
+  return (
+    <span className="tabular-nums">{formatted}</span>
+  );
+}
 
 export default function Vault({ onUnlocked }) {
   const [isHolding, setIsHolding] = useState(false);
@@ -40,7 +72,15 @@ export default function Vault({ onUnlocked }) {
       <span>PHASE 04 // THE VAULT (HOLD TO AUTHENTICATE)</span>
     </div>
     <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
-      Bounty Pool: ₹2,000,000+
+      Bounty Pool:{' '}
+      <span className="inline-flex items-baseline">
+        <span className="text-amber-400">₹</span>
+        {vaultUnlocked ? (
+          <span className="text-amber-400 animate-pulse"><AnimatedAmount value={2000000} unlocked={vaultUnlocked} duration={1800} />+</span>
+        ) : (
+          <span className="text-neutral-600 tracking-widest">••,••,•••+</span>
+        )}
+      </span>
     </h2>
     <p className="text-neutral-400 text-xs sm:text-sm mt-3 max-w-xl mx-auto font-sans">
       The vault is locked by biometric encryption. Hold down the authentication hub below to override system locks and reveal the loot.
@@ -146,8 +186,14 @@ export default function Vault({ onUnlocked }) {
           <span className="text-xs font-bold text-amber-400 tracking-widest uppercase">1ST PRIZE // THE MASTERMIND</span>
           <Award className="w-6 h-6 text-amber-400" />
         </div>
-        <div className="text-3xl sm:text-4xl font-black text-white font-mono">
-          {vaultUnlocked ? "₹1,00,000" : "₹ •••••••"}
+        <div className="text-3xl sm:text-4xl font-black font-mono">
+          {vaultUnlocked ? (
+            <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(251,191,36,0.4)]">
+              ₹<AnimatedAmount value={100000} unlocked={vaultUnlocked} />
+            </span>
+          ) : (
+            <span className="text-neutral-700">₹ •••••••</span>
+          )}
         </div>
         <p className="text-xs text-neutral-400 font-sans mt-3 leading-relaxed">
           Direct Cash Grant + Devfolio Golden Pass + 1 Year Cloud Credits + Trophy of the Heist + Exclusive Direct Mentorship.
@@ -164,8 +210,14 @@ export default function Vault({ onUnlocked }) {
           <span className="text-xs font-bold text-neutral-300 tracking-widest uppercase">2ND PRIZE // THE INSIDE AGENT</span>
           <Award className="w-6 h-6 text-neutral-300" />
         </div>
-        <div className="text-3xl sm:text-4xl font-black text-white font-mono">
-          {vaultUnlocked ? "₹60,000" : "₹ ••••••"}
+        <div className="text-3xl sm:text-4xl font-black font-mono">
+          {vaultUnlocked ? (
+            <span className="bg-gradient-to-r from-neutral-200 via-white to-neutral-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(255,255,255,0.25)]">
+              ₹<AnimatedAmount value={60000} unlocked={vaultUnlocked} />
+            </span>
+          ) : (
+            <span className="text-neutral-700">₹ ••••••</span>
+          )}
         </div>
         <p className="text-xs text-neutral-400 font-sans mt-3 leading-relaxed">
           Direct Cash Grant + Specialized Sponsor Vouchers + Swag Boxes + Fast-Track Job/Internship Screening.
@@ -182,8 +234,14 @@ export default function Vault({ onUnlocked }) {
           <span className="text-xs font-bold text-amber-600 tracking-widest uppercase">3RD PRIZE // THE ENFORCER</span>
           <Award className="w-6 h-6 text-amber-600" />
         </div>
-        <div className="text-3xl sm:text-4xl font-black text-white font-mono">
-          {vaultUnlocked ? "₹40,000" : "₹ ••••••"}
+        <div className="text-3xl sm:text-4xl font-black font-mono">
+          {vaultUnlocked ? (
+            <span className="bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(217,119,6,0.3)]">
+              ₹<AnimatedAmount value={40000} unlocked={vaultUnlocked} />
+            </span>
+          ) : (
+            <span className="text-neutral-700">₹ ••••••</span>
+          )}
         </div>
         <p className="text-xs text-neutral-400 font-sans mt-3 leading-relaxed">
           Direct Cash Grant + Cloud Deployment Bundles + MIET Trophy + Hacker Merchandise Kits.
@@ -196,17 +254,41 @@ export default function Vault({ onUnlocked }) {
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 text-xs text-left">
       <div className="bg-[#101115] p-4 rounded border border-neutral-800">
         <div className="text-red-500 font-bold uppercase tracking-wider mb-1">Tokyo All-Women Award</div>
-        <div className="text-xl font-bold text-white font-mono mb-1">{vaultUnlocked ? "₹25,000" : "₹ •••••"}</div>
+        <div className="text-xl font-bold font-mono mb-1">
+          {vaultUnlocked ? (
+            <span className="bg-gradient-to-r from-red-400 via-rose-300 to-red-400 bg-clip-text text-transparent">
+              ₹<AnimatedAmount value={25000} unlocked={vaultUnlocked} />
+            </span>
+          ) : (
+            <span className="text-neutral-700">₹ •••••</span>
+          )}
+        </div>
         <div className="text-neutral-400 text-[11px]">Dedicated prize category for the highest-scoring all-women engineering crew.</div>
       </div>
       <div className="bg-[#101115] p-4 rounded border border-neutral-800">
         <div className="text-amber-400 font-bold uppercase tracking-wider mb-1">Track Category Bounties</div>
-        <div className="text-xl font-bold text-white font-mono mb-1">{vaultUnlocked ? "₹5,00,000+" : "₹ •••••••"}</div>
+        <div className="text-xl font-bold font-mono mb-1">
+          {vaultUnlocked ? (
+            <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent">
+              ₹<AnimatedAmount value={500000} unlocked={vaultUnlocked} />+
+            </span>
+          ) : (
+            <span className="text-neutral-700">₹ •••••••</span>
+          )}
+        </div>
         <div className="text-neutral-400 text-[11px]">Distributed across AI, Web3, Cloud, Spatial, IoT &amp; Open Innovation.</div>
       </div>
       <div className="bg-[#101115] p-4 rounded border border-neutral-800">
         <div className="text-emerald-400 font-bold uppercase tracking-wider mb-1">Cloud Credits &amp; Per-Recruit Swags</div>
-        <div className="text-xl font-bold text-white font-mono mb-1">{vaultUnlocked ? "₹12,75,000+" : "₹ ••••••••"}</div>
+        <div className="text-xl font-bold font-mono mb-1">
+          {vaultUnlocked ? (
+            <span className="bg-gradient-to-r from-emerald-300 via-emerald-200 to-emerald-400 bg-clip-text text-transparent">
+              ₹<AnimatedAmount value={1275000} unlocked={vaultUnlocked} duration={1600} />+
+            </span>
+          ) : (
+            <span className="text-neutral-700">₹ ••••••••</span>
+          )}
+        </div>
         <div className="text-neutral-400 text-[11px]">GCP Credits, domain coupons, stickers, badges, and T-shirts for every attendee.</div>
       </div>
     </div>
